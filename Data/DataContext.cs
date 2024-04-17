@@ -13,11 +13,6 @@ namespace dotnet_weather_backend.Data
         public DbSet<FavoriteCity> FavoriteCities { get; set; }
         public DbSet<User> Users { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.FavoriteCities);
-        }
 
     }
 }
