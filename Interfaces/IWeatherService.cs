@@ -4,11 +4,10 @@ namespace dotnet_weather_backend.Interfaces
 {
     public interface IWeatherService
     {
-        Task<IEnumerable<string>> GetAllFavoriteCityNames();
-        bool FavoriteCityExistsByName(string cityName, int userId);
-        bool FavoriteCityExistsById(int cityId);
-        Task SaveFavoriteCity(string cityName);
-        Task UnsaveFavoriteCity(string cityName);
+        Task<IEnumerable<string>> GetAllFavoriteCityNames(string username);
+        bool FavoriteCityExistsByName(string cityName, string username);
+        Task SaveFavoriteCity(string cityName, string username);
+        Task UnsaveFavoriteCity(string cityName, string username);
 
     }
 }

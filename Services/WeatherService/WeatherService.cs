@@ -1,7 +1,6 @@
 ﻿using dotnet_weather_backend.Data;
 using dotnet_weather_backend.Interfaces;
 using dotnet_weather_backend.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_weather_backend.Services.WeatherService
@@ -13,27 +12,23 @@ namespace dotnet_weather_backend.Services.WeatherService
         {
             this._dBContext = dBContext;
         }
-        public async Task<IEnumerable<string>> GetAllFavoriteCityNames()
+        public async Task<IEnumerable<string>> GetAllFavoriteCityNames(string username)
         {
-            return await _dBContext.FavoriteCities.Select(fc => fc.City).ToListAsync();
+            return await _dBContext.FavoriteCities.Where(fc => fc.UserUserName == username).Select(fc => fc.City).ToListAsync();
         }
-        public bool FavoriteCityExistsByName(string cityName, int userId)
+        public bool FavoriteCityExistsByName(string cityName, string username)
         {
-            return _dBContext.FavoriteCities.Any(fc => fc.City == cityName && fc.UserId == userId);
+            return _dBContext.FavoriteCities.Any(fc => fc.City == cityName && fc.UserUserName == username);
         }
-        public bool FavoriteCityExistsById(int cityId)
+        public async Task SaveFavoriteCity(string cityName, string username)
         {
-            return _dBContext.FavoriteCities.Any(fc => fc.Id == cityId);
-        }
-        public async Task SaveFavoriteCity(string cityName)
-        {
-            _dBContext.Add(new FavoriteCity() { City = cityName, UserId = 1 });
+            _dBContext.Add(new FavoriteCity() { City = cityName, UserUserName = username });
             await _dBContext.SaveChangesAsync();
         }
 
-        public async Task UnsaveFavoriteCity(string cityName)
+        public async Task UnsaveFavoriteCity(string cityName, string username)
         {
-            _dBContext.Remove(_dBContext.FavoriteCities.First(fc => fc.City == cityName && fc.UserId == 1));
+            _dBContext.Remove(_dBContext.FavoriteCities.First(fc => fc.City == cityName && fc.UserUserName == username));
             await _dBContext.SaveChangesAsync();
         }
     }

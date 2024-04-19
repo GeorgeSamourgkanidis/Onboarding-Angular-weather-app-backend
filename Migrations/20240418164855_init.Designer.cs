@@ -11,7 +11,7 @@ using dotnet_weather_backend.Data;
 namespace dotnet_weather_backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240416110754_init")]
+    [Migration("20240418164855_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,29 +35,27 @@ namespace dotnet_weather_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserUserName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserUserName");
 
                     b.ToTable("FavoriteCities");
                 });
 
             modelBuilder.Entity("dotnet_weather_backend.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserName");
 
                     b.ToTable("Users");
                 });
@@ -66,7 +64,7 @@ namespace dotnet_weather_backend.Migrations
                 {
                     b.HasOne("dotnet_weather_backend.Models.User", "User")
                         .WithMany("FavoriteCities")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserUserName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
