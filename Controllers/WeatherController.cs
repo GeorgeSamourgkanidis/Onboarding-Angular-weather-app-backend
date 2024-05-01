@@ -1,4 +1,6 @@
 ﻿using dotnet_weather_backend.Data;
+using dotnet_weather_backend.DTO;
+using dotnet_weather_backend.DTO.WeatherApiDtos;
 using dotnet_weather_backend.Interfaces;
 using dotnet_weather_backend.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -7,22 +9,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_weather_backend.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherController : Controller
     {
-        private readonly DataContext _dBContext;
         private readonly IWeatherService _weatherService;
+        private readonly IWeatherApiService _weatherApiService;
         private readonly IUserService _userService;
 
-        public WeatherController(DataContext dBContext, IWeatherService weatherService, IUserService userService)
+        public WeatherController(IWeatherService weatherService, IWeatherApiService weatherApiService, IUserService userService)
         {
-            this._dBContext = dBContext;
             this._weatherService = weatherService;
+            this._weatherApiService = weatherApiService;
             this._userService = userService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("favoriteCities")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllFavoriteCityNames()
         {
@@ -30,7 +32,7 @@ namespace dotnet_weather_backend.Controllers
             return Ok(await _weatherService.GetAllFavoriteCityNames(username));
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("saveFavoriteCity")]
         public async Task<IActionResult> SaveFavoriteCity([FromBody] string cityName)
         {
@@ -43,6 +45,7 @@ namespace dotnet_weather_backend.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("unsaveFavoriteCity/{cityName}")]
         public async Task<IActionResult> UnsaveFavoriteCity(string cityName)
         {
@@ -56,6 +59,29 @@ namespace dotnet_weather_backend.Controllers
             return Ok();
         }
 
+        [HttpGet("checkSearchValidity/{cityName}")]
+        public async Task<ActionResult<SearchValidityDto>> CheckSearchValidity(string cityName)
+        {
+            return Ok(await _weatherApiService.CheckSearchValidity(cityName));
+        }
+
+        [HttpGet("getTodayForecast/{cityName}")]
+        public async Task<ActionResult<ForecastDto>> GetTodayForecast(string cityName)
+        {
+            return Ok(await _weatherApiService.GetTodayForecast(cityName));
+        }
+
+        [HttpGet("getTodayTomorrowMaxTemps/{cityName}")]
+        public async Task<ActionResult<ForecastDto>> GetTodayTomorrowMaxTemps(string cityName)
+        {
+            return Ok(await _weatherApiService.GetTodayTomorrowMaxTemps(cityName));
+        }
+
+        [HttpGet("getYesterdayMaxTemps/{cityName}")]
+        public async Task<ActionResult<HistoryDto>> GetYesterdayMaxTemps(string cityName)
+        {
+            return Ok(await _weatherApiService.GetYesterdayMaxTemps(cityName));
+        }
 
     }
 
